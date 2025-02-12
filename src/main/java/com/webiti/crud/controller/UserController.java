@@ -1,5 +1,6 @@
 package com.webiti.crud.controller;
 
+import com.webiti.crud.dto.request.UserRequest;
 import com.webiti.crud.dto.response.UserResponse;
 import com.webiti.crud.helper.ApplicationMessages;
 import com.webiti.crud.helper.ResponseHandler;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,8 +41,30 @@ public class UserController {
         }
     }
 
+    @PostMapping("")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<Object> createUser(@RequestBody UserRequest userRequest) {
+        UserResponse response = userService.createUser(userRequest);
+        return ResponseHandler.generateResponse(ApplicationMessages.USER_CREATED.getMessage(), HttpStatus.CREATED, response);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateUser(@PathVariable("id") Integer id, @RequestBody UserRequest userRequest) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userPrincipal = (User) authentication.getPrincipal();
+
+        if (!id.equals(userPrincipal.getId()) && !userPrincipal.getRole().equals("ADMIN")) {
+            return ResponseHandler.generateResponse(ApplicationMessages.UNAUTHORIZED_UPDATED_USER.getMessage(),
+                    HttpStatus.FORBIDDEN, null);
+        }
+
+        UserResponse response = userService.updateUserById(id, userRequest);
+        return ResponseHandler.generateResponse(ApplicationMessages.USER_UPDATED.getMessage(), HttpStatus.OK, response);
+    }
+
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Object> allUsers(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
@@ -71,6 +95,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<Object> deleteUserById(@PathVariable("id") Integer id) {
         userService.deleteUserById(id);
         return ResponseHandler.generateResponse(ApplicationMessages.USER_DELETED.getMessage(), HttpStatus.OK, null);

@@ -1,6 +1,7 @@
 package com.webiti.crud.service;
 
 import com.webiti.crud.dto.request.RegisterUserDto;
+import com.webiti.crud.dto.request.UserRequest;
 import com.webiti.crud.dto.response.UserResponse;
 import com.webiti.crud.helper.ValidationErrors;
 import com.webiti.crud.helper.Validations;
@@ -53,6 +54,37 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         return userRepository.save(user);
+    }
+
+    @Override
+    public UserResponse createUser(UserRequest input) {
+        Optional<Role> optionalRole = roleRepository.findByName(RoleEnum.USER);
+        if (optionalRole.isEmpty()) {
+            return null;
+        }
+
+        User user = User.builder()
+                .fullName(input.getFullName())
+                .email(input.getEmail())
+                .password(passwordEncoder.encode(input.getPassword()))
+                .role(optionalRole.get())
+                .build();
+        userRepository.save(user);
+
+        return userMapper.mapToUserResponse(user);
+    }
+
+    @Override
+    public UserResponse updateUserById(Integer id, UserRequest input) {
+        Optional<User> optOfUser = userRepository.findById(id);
+        Validations.checkArgument(
+                optOfUser.isPresent(), ValidationErrors.USER_NOT_FOUND);
+        User user = optOfUser.get();
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setFullName(input.getFullName());
+        userRepository.save(user);
+        return userMapper.mapToUserResponse(user);
     }
 
     @Override

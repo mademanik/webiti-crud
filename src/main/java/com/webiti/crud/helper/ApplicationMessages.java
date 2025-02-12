@@ -13,10 +13,12 @@ public enum ApplicationMessages {
     USER_DATA_EMPTY("Data user is empty"),
     USER_NOT_FOUND("Data user not found with id : %s"),
 
+    UNAUTHORIZED_UPDATED_USER("You are not authorized to update this user"),
+
     LOGIN_SUCCESS("Login success"),
     REGISTER_SUCCESS("Register success"),
     ADMIN_CREATED("Admin successfully created"),
-    REFRESH_TOKEN_SUCCESS("Login success"),
+    REFRESH_TOKEN_SUCCESS("Refresh token successfully generated"),
 
     USERNAME_PASSWORD_INCORRECT("The username or password is incorrect"),
     ACCOUNT_LOCKED("The account is locked"),
