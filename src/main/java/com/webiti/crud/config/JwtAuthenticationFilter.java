@@ -1,5 +1,8 @@
 package com.webiti.crud.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.webiti.crud.helper.ApplicationMessages;
+import com.webiti.crud.helper.ResponseHandler;
 import com.webiti.crud.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -9,6 +12,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +25,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -72,13 +78,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
-            handlerExceptionResolver.resolveException(request, response, null, new ExpiredJwtException(null, null, "Token expired"));
+            sendErrorResponse(response, "Token expired", "TOKEN_EXPIRED", HttpServletResponse.SC_FORBIDDEN);
         } catch (SignatureException e) {
-            handlerExceptionResolver.resolveException(request, response, null, new SignatureException("Invalid token signature"));
+            sendErrorResponse(response, "Invalid token signature", "INVALID_SIGNATURE", HttpServletResponse.SC_FORBIDDEN);
         } catch (MalformedJwtException e) {
-            handlerExceptionResolver.resolveException(request, response, null, new MalformedJwtException("Malformed JWT token"));
+            sendErrorResponse(response, "Invalid JWT token", "INVALID_TOKEN", HttpServletResponse.SC_FORBIDDEN);
         } catch (Exception exception) {
-            handlerExceptionResolver.resolveException(request, response, null, exception);
+            sendErrorResponse(response, "Internal Server Error", "INTERNAL_SERVER_ERROR", HttpServletResponse.SC_FORBIDDEN);
         }
     }
+
+    private void sendErrorResponse(HttpServletResponse response, String message, String code, int status) throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("message", message);
+        errorResponse.put("error_code", code);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+
+        response.getWriter().write(jsonResponse);
+    }
+
 }

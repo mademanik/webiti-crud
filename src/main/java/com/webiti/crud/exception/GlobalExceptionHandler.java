@@ -80,26 +80,5 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, null);
     }
 
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<Object> expiredJwtException(ExpiredJwtException e) {
-        return ResponseHandler.generateResponse(ApplicationMessages.JWT_TOKEN_EXPIRED.getValue("Token has expired"),
-                HttpStatus.UNAUTHORIZED, null);
-    }
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<Object> signatureException(SignatureException e) {
-        return ResponseHandler.generateResponse(ApplicationMessages.JWT_SIGNATURE_INVALID.getValue("Invalid token signature"),
-                HttpStatus.UNAUTHORIZED, null);
-    }
-
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    @ExceptionHandler(MalformedJwtException.class)
-    public ResponseEntity<Object> malformedJwtException(MalformedJwtException e) {
-        return ResponseHandler.generateResponse(ApplicationMessages.JWT_SIGNATURE_INVALID.getValue("Malformed JWT token"),
-                HttpStatus.UNAUTHORIZED, null);
-    }
-
 }
 

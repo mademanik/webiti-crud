@@ -5,10 +5,13 @@ import com.webiti.crud.dto.LoginUserDto;
 import com.webiti.crud.dto.RegisterUserDto;
 import com.webiti.crud.helper.ApplicationMessages;
 import com.webiti.crud.helper.ResponseHandler;
+import com.webiti.crud.model.RefreshToken;
 import com.webiti.crud.model.User;
 import com.webiti.crud.service.AuthenticationService;
 import com.webiti.crud.service.JwtService;
+import com.webiti.crud.service.RefreshTokenService;
 import com.webiti.crud.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,9 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RequestMapping("/auth")
 @RestController
+@Slf4j
 public class AuthenticationController {
 
     @Autowired
@@ -32,6 +37,8 @@ public class AuthenticationController {
     private AuthenticationService authenticationService;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     @PostMapping("/signup")
     public ResponseEntity<Object> register(@RequestBody RegisterUserDto registerUserDto) {
@@ -42,41 +49,45 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
+        log.info("cek userid");
+        log.info(String.valueOf(authenticatedUser.getId()));
 
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        String refreshToken = jwtService.generateRefreshToken(authenticatedUser);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginUserDto.getEmail());
 
         LoginResponse response = LoginResponse.builder()
                 .accessToken(jwtToken)
                 .expiresIn(jwtService.getExpirationTime())
-                .refreshToken(refreshToken)
-                .refreshTokenExpiresIn(jwtService.getRefreshTokenExpirationTime())
+                .refreshToken(refreshToken.getToken())
+                .refreshTokenExpiresIn(refreshToken.getExpiryDate())
                 .build();
 
         return ResponseHandler.generateResponse(ApplicationMessages.LOGIN_SUCCESS.getMessage(), HttpStatus.OK, response);
     }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
+    @PostMapping("/refreshToken")
+    public ResponseEntity<Object> refreshToken(@RequestBody Map<String, String> request) {
         String refreshToken = request.get("refresh_token");
 
-        try {
-            String username = jwtService.extractUsername(refreshToken);
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        RefreshToken refreshTokenObj = refreshTokenService.findByToken(refreshToken)
+                .map(refreshTokenService::verifyExpiration)
+                .orElseThrow(() -> new RuntimeException("Refresh token doesn't exists!"));
 
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                String newAccessToken = jwtService.generateToken(userDetails);
+        String accessToken = jwtService.generateToken(refreshTokenObj.getUser());
+        LoginResponse loginResponse = LoginResponse.builder()
+                .accessToken(accessToken)
+                .expiresIn(jwtService.getExpirationTime())
+                .refreshToken(refreshTokenObj.getToken())
+                .refreshTokenExpiresIn(refreshTokenObj.getExpiryDate())
+                .build();
 
-                Map<String, String> response = new HashMap<>();
-                response.put("access_token", newAccessToken);
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid refresh token"));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid refresh token"));
-        }
+        return ResponseHandler.generateResponse(
+                ApplicationMessages.REFRESH_TOKEN_SUCCESS.getMessage(),
+                HttpStatus.OK,
+                loginResponse
+        );
     }
+
 
 
 }
