@@ -1,6 +1,6 @@
 package com.webiti.crud.controller;
 
-import com.webiti.crud.dto.RegisterUserDto;
+import com.webiti.crud.dto.request.RegisterUserDto;
 import com.webiti.crud.helper.ApplicationMessages;
 import com.webiti.crud.helper.ResponseHandler;
 import com.webiti.crud.model.User;

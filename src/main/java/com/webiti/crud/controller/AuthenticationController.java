@@ -1,8 +1,8 @@
 package com.webiti.crud.controller;
 
-import com.webiti.crud.dto.LoginResponse;
-import com.webiti.crud.dto.LoginUserDto;
-import com.webiti.crud.dto.RegisterUserDto;
+import com.webiti.crud.dto.response.LoginResponse;
+import com.webiti.crud.dto.request.LoginUserDto;
+import com.webiti.crud.dto.request.RegisterUserDto;
 import com.webiti.crud.helper.ApplicationMessages;
 import com.webiti.crud.helper.ResponseHandler;
 import com.webiti.crud.model.RefreshToken;
@@ -10,21 +10,17 @@ import com.webiti.crud.model.User;
 import com.webiti.crud.service.AuthenticationService;
 import com.webiti.crud.service.JwtService;
 import com.webiti.crud.service.RefreshTokenService;
-import com.webiti.crud.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RequestMapping("/auth")
 @RestController
@@ -49,9 +45,6 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Object> authenticate(@RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
-        log.info("cek userid");
-        log.info(String.valueOf(authenticatedUser.getId()));
-
         String jwtToken = jwtService.generateToken(authenticatedUser);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(loginUserDto.getEmail());
 

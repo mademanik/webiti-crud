@@ -1,8 +1,6 @@
 package com.webiti.crud.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.webiti.crud.helper.ApplicationMessages;
-import com.webiti.crud.helper.ResponseHandler;
 import com.webiti.crud.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -12,7 +10,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

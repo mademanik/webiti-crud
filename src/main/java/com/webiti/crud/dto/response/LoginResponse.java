@@ -1,4 +1,4 @@
-package com.webiti.crud.dto;
+package com.webiti.crud.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
