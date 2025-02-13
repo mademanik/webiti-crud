@@ -10,24 +10,22 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
-@Table(name = "roles")
+@Table(name = "products")
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Role {
+public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false)
-    private Integer id;
-
-    @Column(unique = true, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private RoleEnum name;
+    private Long id;
 
     @Column(nullable = false)
-    private String description;
+    private String name;
+
+    @Column(nullable = false)
+    private double price;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

@@ -4,6 +4,8 @@ import com.webiti.crud.dto.request.UserRequest;
 import com.webiti.crud.dto.response.UserResponse;
 import com.webiti.crud.helper.ApplicationMessages;
 import com.webiti.crud.helper.ResponseHandler;
+import com.webiti.crud.mapper.UserMapper;
+import com.webiti.crud.model.RoleEnum;
 import com.webiti.crud.model.User;
 import com.webiti.crud.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +30,15 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/me")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> authenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User response = (User) authentication.getPrincipal();
+        User getUser = (User) authentication.getPrincipal();
+        UserResponse response = userMapper.mapToUserResponse(getUser);
 
         if (response != null) {
             return ResponseHandler.generateResponse(ApplicationMessages.USER_RETRIEVED.getMessage(), HttpStatus.OK, response);
@@ -53,8 +59,9 @@ public class UserController {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userPrincipal = (User) authentication.getPrincipal();
+        RoleEnum userRole = userPrincipal.getRole().getName();
 
-        if (!id.equals(userPrincipal.getId()) && !userPrincipal.getRole().equals("ADMIN")) {
+        if (!id.equals(userPrincipal.getId()) && !userRole.equals(RoleEnum.ADMIN)) {
             return ResponseHandler.generateResponse(ApplicationMessages.UNAUTHORIZED_UPDATED_USER.getMessage(),
                     HttpStatus.FORBIDDEN, null);
         }
@@ -85,6 +92,15 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getUserById(@PathVariable("id") Integer id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User userPrincipal = (User) authentication.getPrincipal();
+        RoleEnum userRole = userPrincipal.getRole().getName();
+
+        if (!id.equals(userPrincipal.getId()) && !userRole.equals(RoleEnum.ADMIN)) {
+            return ResponseHandler.generateResponse(ApplicationMessages.UNAUTHORIZED_GET_USER.getMessage(),
+                    HttpStatus.FORBIDDEN, null);
+        }
+
         UserResponse response = userService.getUserById(id);
         if (response != null) {
             return ResponseHandler.generateResponse(ApplicationMessages.USER_RETRIEVED.getMessage(), HttpStatus.OK, response);

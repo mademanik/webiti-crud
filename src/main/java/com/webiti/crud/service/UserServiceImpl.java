@@ -46,6 +46,10 @@ public class UserServiceImpl implements UserService {
             return null;
         }
 
+        Optional<User> optOfUser = userRepository.findByEmail(input.getEmail());
+        Validations.checkArgument(
+                optOfUser.isEmpty(), ValidationErrors.ADMIN_ALREADY_EXISTS);
+
         User user = User.builder()
                 .fullName(input.getFullName())
                 .email(input.getEmail())
@@ -62,6 +66,10 @@ public class UserServiceImpl implements UserService {
         if (optionalRole.isEmpty()) {
             return null;
         }
+
+        Optional<User> optOfUser = userRepository.findByEmail(input.getEmail());
+        Validations.checkArgument(
+                optOfUser.isEmpty(), ValidationErrors.USER_ALREADY_EXISTS);
 
         User user = User.builder()
                 .fullName(input.getFullName())

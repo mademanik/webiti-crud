@@ -13,7 +13,31 @@ public enum ApplicationMessages {
     USER_DATA_EMPTY("Data user is empty"),
     USER_NOT_FOUND("Data user not found with id : %s"),
 
+    PRODUCT_CREATED("Data product successfully created"),
+    PRODUCT_RETRIEVED("Data product successfully retrieved"),
+    PRODUCT_DELETED("Data product successfully deleted"),
+    PRODUCT_UPDATED("Data product successfully updated"),
+    PRODUCT_DATA_EMPTY("Data product is empty"),
+    PRODUCT_NOT_FOUND("Data product not found with id : %s"),
+
+    ORDER_CREATED("Data order successfully created"),
+    ORDER_RETRIEVED("Data order successfully retrieved"),
+    ORDER_DELETED("Data order successfully deleted"),
+    ORDER_UPDATED("Data order successfully updated"),
+    ORDER_DATA_EMPTY("Data order is empty"),
+    ORDER_NOT_FOUND("Data order not found with id : %s"),
+
+    USER_STAT_RETRIEVED("Data user statistics successfully retrieved"),
+    PRODUCT_STAT_RETRIEVED("Data product statistics successfully retrieved"),
+    ORDER_STAT_RETRIEVED("Data order statistics successfully retrieved"),
+
     UNAUTHORIZED_UPDATED_USER("You are not authorized to update this user"),
+    UNAUTHORIZED_GET_USER("You are not authorized to get this user"),
+
+    UNAUTHORIZED_CREATE_ORDER("You are not authorized to create order for this user"),
+    UNAUTHORIZED_GET_ORDER("You are not authorized to get order data from this user"),
+    UNAUTHORIZED_DELETE_ORDER("You are not authorized to delete order data from this user"),
+    UNAUTHORIZED_UPDATE_ORDER("You are not authorized to update order data from this user"),
 
     LOGIN_SUCCESS("Login success"),
     REGISTER_SUCCESS("Register success"),

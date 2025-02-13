@@ -1,6 +1,6 @@
 CREATE TABLE public.roles
 (
-    id          int4         NOT NULL,
+    id          serial4      NOT NULL,
     created_at  timestamp(6) NULL,
     description varchar(255) NOT NULL,
     "name"      varchar(255) NOT NULL,
@@ -20,3 +20,5 @@ VALUES (2, '2025-02-11 19:12:23.899', 'Administrator role', 'ADMIN', '2025-02-11
 INSERT INTO public.roles
     (id, created_at, description, "name", updated_at)
 VALUES (3, '2025-02-11 19:12:23.912', 'Super Administrator role', 'SUPER_ADMIN', '2025-02-11 19:12:23.912');
+
+SELECT setval('roles_id_seq', (SELECT MAX(id) FROM roles));

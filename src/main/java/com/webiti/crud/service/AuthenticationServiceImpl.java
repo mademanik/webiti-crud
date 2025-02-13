@@ -2,6 +2,8 @@ package com.webiti.crud.service;
 
 import com.webiti.crud.dto.request.LoginUserDto;
 import com.webiti.crud.dto.request.RegisterUserDto;
+import com.webiti.crud.helper.ValidationErrors;
+import com.webiti.crud.helper.Validations;
 import com.webiti.crud.model.Role;
 import com.webiti.crud.model.RoleEnum;
 import com.webiti.crud.model.User;
@@ -33,6 +35,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (optionalRole.isEmpty()) {
             return null;
         }
+
+        Optional<User> optOfUser = userRepository.findByEmail(input.getEmail());
+        Validations.checkArgument(
+                optOfUser.isEmpty(), ValidationErrors.USER_ALREADY_EXISTS);
 
         User user = User.builder()
                 .fullName(input.getFullName())

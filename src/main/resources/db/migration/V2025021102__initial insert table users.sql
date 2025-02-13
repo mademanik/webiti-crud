@@ -1,6 +1,6 @@
 CREATE TABLE public.users
 (
-    id         int4         NOT NULL,
+    id         serial4      NOT NULL,
     created_at timestamp(6) NULL,
     email      varchar(100) NOT NULL,
     full_name  varchar(255) NOT NULL,
@@ -18,3 +18,5 @@ INSERT INTO public.users
     (id, created_at, email, full_name, "password", updated_at, role_id)
 VALUES (1, '2025-02-11 19:14:09.986', 'super.admin@email.com', 'Super Admin',
         '$2a$10$jzyYs2n8KXN9oNnCWxMqZ.pKZ/uCFdYT4wpBJjuKVNZAL3lKmS.tu', '2025-02-11 19:14:09.986', 3);
+
+SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
