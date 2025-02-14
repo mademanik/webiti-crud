@@ -76,7 +76,7 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<User> userPage = userService.allUsers(page, size);
+        Page<UserResponse> userPage = userService.allUsers(page, size);
 
         Map<String, Object> response = new HashMap<>();
         response.put("users", userPage.getContent());

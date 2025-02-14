@@ -33,9 +33,9 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
     @Override
-    public Page<User> allUsers(int page, int size) {
+    public Page<UserResponse> allUsers(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.findAll(pageable);
+        return userRepository.findAll(pageable).map(user -> userMapper.mapToUserResponse(user));
     }
 
     @Override
