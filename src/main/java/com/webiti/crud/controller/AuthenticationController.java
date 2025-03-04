@@ -10,21 +10,25 @@ import com.webiti.crud.model.User;
 import com.webiti.crud.service.AuthenticationService;
 import com.webiti.crud.service.JwtService;
 import com.webiti.crud.service.RefreshTokenService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RequestMapping("/auth")
 @RestController
 @Slf4j
+@CrossOrigin
 public class AuthenticationController {
 
     @Autowired
@@ -81,6 +85,14 @@ public class AuthenticationController {
         );
     }
 
-
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> logout(HttpServletRequest request, HttpServletResponse response) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        }
+        return ResponseHandler.generateResponse("User logged out successfully", HttpStatus.OK, null);
+    }
 
 }

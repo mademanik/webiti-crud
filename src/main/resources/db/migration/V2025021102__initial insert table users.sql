@@ -19,4 +19,8 @@ INSERT INTO public.users
 VALUES (1, '2025-02-11 19:14:09.986', 'super.admin@email.com', 'Super Admin',
         '$2a$10$jzyYs2n8KXN9oNnCWxMqZ.pKZ/uCFdYT4wpBJjuKVNZAL3lKmS.tu', '2025-02-11 19:14:09.986', 3);
 
+INSERT INTO public.users
+(id, created_at, email, full_name, "password", updated_at, role_id)
+VALUES(2, '2025-02-14 11:46:45.920', 'admin@gmail.com', 'Admin', '$2a$10$JLSgWA.BfnmOzbtQoBRF2uBxmXvPmEED2BYtK/huaZzQ3MHjqBtya', '2025-02-14 11:46:45.920', 2);
+
 SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));

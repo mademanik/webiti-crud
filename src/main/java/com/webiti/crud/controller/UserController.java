@@ -18,13 +18,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 
 @RequestMapping("/users")
 @RestController
 @Slf4j
+@CrossOrigin
 public class UserController {
 
     @Autowired
